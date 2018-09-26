@@ -4,15 +4,26 @@ import os
 import time
 
 class game:
-    def __init__(self,response):
+    def __init__(self,maze_json):
         self.game_state=maze_json['game-state']
         self.pony=maze_json['pony'][0]
+        self.pony_old=maze_json['pony'][0]
         self.domokun=maze_json['domokun'][0]
         self.endpoint=maze_json['end-point'][0]
         self.size=maze_json['size']
         self.maze=maze_json['data']
         self.maxlength=0
         self.cells={}
+    def update(self,maze_json):
+        self.game_state=maze_json['game-state']
+        self.pony=maze_json['pony'][0]
+        self.pony_old=maze_json['pony'][0]
+        self.domokun=maze_json['domokun'][0]
+        self.endpoint=maze_json['end-point'][0]
+        self.size=maze_json['size']
+        self.maze=maze_json['data']
+        self.maxlength=0
+        #self.cells={}
     def shortest_path(self,start_point):
         self.cells[start_point]=0
         self.maxlength=0
@@ -70,7 +81,7 @@ class game:
             wwall='|'
             intersect='+'
             line=''
-            time.sleep(0.01)
+            time.sleep(0.5)
             os.system('cls' if os.name == 'nt' else 'clear')
             for y in  range(0,self.size[1]):
                 for iter in range(1,3):
@@ -122,7 +133,8 @@ class game:
         # If domokun is in your way search alternative route (recalculate shortest path interpret domokun as wall
         # if no path and domokun in a way. Just move closer
             # if domokun to close move away(runaway)
-            # if run away choose path with most intersections (how) 
+            # if run away choose path with most intersections (how)
+        self.pony_old=self.pony
         self.pony=movetocell
     def makeMoveDomokun(self):
         charmove=self.cellpossiblemove(self.domokun)
@@ -140,7 +152,6 @@ class game:
             self.path.append(movetocell)
         for i in self.path:
             self.cells[i]='%%'
-        
 class mazeRoutes:
 
     def __init__(self,maze):
@@ -208,36 +219,38 @@ class mazeRoutes:
           
           
           
-            
-
-with open('maze.json', 'r') as outfile:
-    maze_json=json.load(outfile)
-maze=game(maze_json)
-##maze.shortest_path(maze.endpoint)
-##for i in range(0,maze.pony):
-##    if i%1==0:
-##        maze.printmaze()
-##    maze.makeMoveDomokun()
-##    maze.makeMovePony()
-##    if maze.cells[maze.pony]==0:
-##        break
-##maze.printmaze()
-mazeroute=mazeRoutes(maze)
-mazeroute.makeMove(0,6)
-maze.printmaze(1,mazeroute.cells)
-time.sleep(4)
-
-mazeroute2=mazeRoutes(maze)
-mazeroute2.makeMove(maze.pony,maze.endpoint,[4,10,34,23])
-maze.printmaze(1,mazeroute2.cells)
-time.sleep(4)
-for i in range(0,len(maze.maze)-1):
-    if 'west' in maze.maze[i] and i%maze.size[0]!=0:
-        maze.maze[i].remove('west')
-    
-mazeroute3=mazeRoutes(maze)
-mazeroute3.makeMove(maze.pony,maze.endpoint,[4,10,34,23])
-maze.printmaze(1,mazeroute3.cells)
+if __name__ == "__main__":           
+#shortest path
+    #Shortest Path
+    with open('maze.json', 'r') as outfile:
+        maze_json=json.load(outfile)
+    maze=game(maze_json)
+    maze.shortest_path(maze.endpoint)
+    for i in range(0,maze.pony):
+        if i%1==0:
+            maze.printmaze()
+        maze.makeMoveDomokun()
+        maze.makeMovePony()
+        if maze.cells[maze.pony]==0:
+            break
+    maze.printmaze()
+    mazeroute=mazeRoutes(maze)
+    mazeroute.makeMove(0,6)
+    maze.printmaze(1,mazeroute.cells)
+    time.sleep(4)
+    # test 
+    mazeroute2=mazeRoutes(maze)
+    mazeroute2.makeMove(maze.pony,maze.endpoint,[4,10,34,23])
+    maze.printmaze(1,mazeroute2.cells)
+    time.sleep(4)
+    # remove west walls to test activities.
+    for i in range(0,len(maze.maze)-1):
+        if 'west' in maze.maze[i] and i%maze.size[0]!=0:
+            maze.maze[i].remove('west')
+        
+    mazeroute3=mazeRoutes(maze)
+    mazeroute3.makeMove(maze.pony,maze.endpoint,[4,10,34,23])
+    maze.printmaze(1,mazeroute3.cells)
 
 
 

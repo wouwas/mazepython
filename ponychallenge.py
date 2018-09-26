@@ -1,97 +1,129 @@
 import requests
 import json
+import maze
 from requests import Request, Session
-
-ponyname='Pinkie Pie'
 mainurl='https://ponychallenge.trustpilot.com/pony-challenge/'
-def NewMaze(height,width,ponyname="Pinkie Pie"):
-    url='maze'    
-    data={"maze-width": height,
-    "maze-height": width,
-    "maze-player-name": ponyname,
-    "difficulty": 0
-    }
-    data_json = json.dumps(data)
-    headers = {"Content-Type":"application/json","Accept": "application/json"}
-    request=MazeRequestWrapper(reqType='POST',url=mainurl+url,data_json=data_json,reqHeaders=headers)
-    return request
-    
-    
-   
-    
-    
-def getMaze(MazeId):
-    url='maze/'+MazeId
-    headers = {"Content-Type":"application/json","Accept": "application/json"}
-    response=MazeRequestWrapper(reqType='GET',url=mainurl+url,data_json='',reqHeaders=headers)
-    return response
-def MazeRequestWrapper(reqType,url,reqHeaders,data_json):
-    if reqHeaders:
-        headers=reqHeaders
-    else:
-        headers={"Content-Type":"application/json","Accept": "application/json"}
-    s=Session()
-    if reqType=='GET':
-        rdef=Request('GET',url,headers=headers)
-    elif reqType=='POST':
-        rdef=Request('POST',url,data=data_json,headers=headers)
-    prepped=rdef.prepare()
-    pretty_print_POST(prepped)
-    r=s.send(prepped)
-    if r.status_code == requests.codes.ok:
-        return r
-    else:
-        print(r.json)
-        print(r.status_code)
-        print(r.text)
-        pretty_print_POST(prepped)
-        r.raise_for_status()          
+ponyname='Pinkie Pie'
+class connectionPony:
+    def __init__(self,height,width,ponyname,difficulty):
+        self.height=height
+        self.width=width
+        self.ponyname=ponyname
+        self.difficulty=difficulty
+        self.mazeId=None
+
+    def new(self):
+        url='maze'    
+        data={"maze-width": self.height,
+        "maze-height": self.width,
+        "maze-player-name": self.ponyname,
+        "difficulty": self.difficulty
+        }
+        data_json = json.dumps(data)
+        headers = {"Content-Type":"application/json","Accept": "application/json"}
+        request=self.MazeRequestWrapper(reqType='POST',url=mainurl+url,data_json=data_json,reqHeaders=headers)
+        self.mazeId=json.loads(request.text)['maze_id']
         
+    def get(self):
+        url='maze/'+self.mazeId
+        headers = {"Content-Type":"application/json","Accept": "application/json"}
+        self.response=self.MazeRequestWrapper(reqType='GET',url=mainurl+url,data_json='',reqHeaders=headers)
+        self.response_json=json.loads(self.response.text)
+        return self.response_json
+    def move (self,direction):
+        url='maze/'+self.mazeId   
+        data={"direction": direction}
+        data_json = json.dumps(data)
+        headers = {"Content-Type":"application/json","Accept": "application/json"}
+        request=self.MazeRequestWrapper(reqType='POST',url=mainurl+url,data_json=data_json,reqHeaders=headers)
+        return request
 
-def pretty_print_POST(req):
-    """
-    At this point it is completely built and ready
-    to be fired; it is "prepared".
+    def MazeRequestWrapper(self,reqType,url,reqHeaders,data_json):
+        if reqHeaders:
+            headers=reqHeaders
+        else:
+            headers={"Content-Type":"application/json","Accept": "application/json"}
+        s=Session()
+        if reqType=='GET':
+            rdef=Request('GET',url,headers=headers)
+        elif reqType=='POST':
+            rdef=Request('POST',url,data=data_json,headers=headers)
+        prepped=rdef.prepare()
+        self.pretty_print_POST(prepped)
+        r=s.send(prepped)
+        if r.status_code == requests.codes.ok:
+            return r
+        else:
+            print(r.json)
+            print(r.status_code)
+            print(r.text)
+            pretty_print_POST(prepped)
+            r.raise_for_status()          
+            
 
-    However pay attention at the formatting used in 
-    this function because it is programmed to be pretty 
-    printed and may differ from the actual request.
-    """
-    print('{}\n{}\n{}\n\n{}'.format(
-        '-----------START-----------',
-        req.method + ' ' + req.url,
-        '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
-        req.body,
-    ))    
+    def pretty_print_POST(self,req):
+        """
+        At this point it is completely built and ready
+        to be fired; it is "prepared".
 
-def MakeMove (MazeID,Move):
-    url='POST /pony-challenge/maze/{maze-id}'
+        However pay attention at the formatting used in 
+        this function because it is programmed to be pretty 
+        printed and may differ from the actual request.
+        """
+        print('{}\n{}\n{}\n\n{}'.format(
+            '-----------START-----------',
+            req.method + ' ' + req.url,
+            '\n'.join('{}: {}'.format(k, v) for k, v in req.headers.items()),
+            req.body,
+        ))
+    def save(self):
+        with open('maze.json', 'w') as outfile:
+            json.dump(maze_json, outfile)
 
-'''curl -X POST --header 'Content-Type: application/json' --header 'Accept: application/json' -d '{ \ 
-   "maze-width": 15, \ 
-   "maze-height": 15, \ 
-   "maze-player-name": "Pinkie Pie", \ 
-   "difficulty": 0 \ 
- }' 'https://ponychallenge.trustpilot.com/pony-challenge/
-'''
+
 #maze_id={  "maze_id": "bf36a64b-b908-4ab9-b1c5-43f257d24340"}
 
-final_state={
-  "state": "over",
-  "state-result": "You lost. Killed by monster",
-  "hidden-url": "/eW91X2tpbGxlZF90aGVfcG9ueQ==.jpg"
-}
+##final_state={
+##  "state": "over",
+##  "state-result": "You lost. Killed by monster",
+##  "hidden-url": "/eW91X2tpbGxlZF90aGVfcG9ueQ==.jpg"
+##}
+def MoveDirection(before,after,horizontal):
+    diff=before-after
+    print (str(before)+'-----'+str(after)+'---'+str(diff))
+    if diff==1:
+        return 'west'
+    if diff==-1:
+        return 'east'
+    if diff==horizontal:
+        return 'north'
+    if diff==horizontal*-1:
+        return 'south'
+    print (before+'-----'+after)
+mazeconnection=connectionPony(25,25,ponyname,2)
 
-maze_id=json.loads(NewMaze(15,15,'Pinkie Pie').text)['maze_id']
-maze=getMaze(maze_id)
-maze_json=json.loads(maze.text)
-maze_json['data']
-maze_json['game-state']
-game-state['maze_id']
-maze_json['pony']
-maze_json['domokun']
-maze_json['endpoint']
-maze_json['size']
+maze_id=mazeconnection.new()
+#maze_id=json.loads(NewMaze(15,15,'Pinkie Pie').text)['maze_id']
+#maze=mazeconnectio.get()
+maze_json=mazeconnection.get()
+maze=maze.game(maze_json)
+maze.shortest_path(maze.endpoint)
+for i in range(0,maze.pony):
+    maze.makeMovePony()
+    direction=    MoveDirection(maze.pony_old,maze.pony,maze.size[0])
+   
+    mazeconnection.move(direction) #make move send move to connection
+   
+    maze.update(mazeconnection.get())
+    print(direction)
+    maze.printmaze()
+    print(maze.game_state)
+    if maze.cells[maze.pony]==0:
+        break
+    if maze.game_state['state']!='active':
+        break
+    print(maze.game_state)
 
-with open('maze.json', 'w') as outfile:
-    json.dump(maze_json, outfile)
+
+
+
