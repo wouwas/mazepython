@@ -57,7 +57,7 @@ class connectionPony:
             print(r.json)
             print(r.status_code)
             print(r.text)
-            pretty_print_POST(prepped)
+            self.pretty_print_POST(prepped)
             r.raise_for_status()          
             
 

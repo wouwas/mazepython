@@ -5,14 +5,7 @@ import time
 
 class game:
     def __init__(self,maze_json):
-        self.game_state=maze_json['game-state']
-        self.pony=maze_json['pony'][0]
-        self.pony_old=maze_json['pony'][0]
-        self.domokun=maze_json['domokun'][0]
-        self.endpoint=maze_json['end-point'][0]
-        self.size=maze_json['size']
-        self.maze=maze_json['data']
-        self.maxlength=0
+        self.update(maze_json)
         self.cells={}
     def update(self,maze_json):
         self.game_state=maze_json['game-state']
