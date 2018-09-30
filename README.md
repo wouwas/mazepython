@@ -8,14 +8,14 @@ Script solves https://ponychallenge.trustpilot.com/index.html
 main.py
 
 Script  reads in configuration file config.ini
-Handles basic logic. Calls othe modules. 
+Handles basic logic. Calls other modules. 
 
 ponychallenge.py
-    module handles ponny challenge connections to REST-API
+    module handles ponny challenge connections to REST-API.
 
 maze.py
-    Calculates shortest path and moves based on maze.json
-    Has module mazeRoutes which could be  used to calculate
+    Calculates shortest path and moves based on maze.json.
+    Has module mazeRoutes which could be  used to calculate shortest paths.
 
 
 
