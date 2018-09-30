@@ -146,7 +146,23 @@ class game:
         for i in self.path:
             self.cells[i]='%%'
 class mazeRoutes:
+    ''' Class calculates shortest possible routes between cells.
+    Usage  
+        maze=game(maze_json)
+        mazeroute=mazeRoutes(maze)
+        mazeroute.makeMove(maze.pony,maze.endpoint,[4,10,34,23])
+        Calculates shortest route from startpoint to endpoint.
+        ForbidenCells - list doesnt' allow to include theese cells in shortest route. 
+        example could be domokun monster cell.
 
+        mazeroute.cells - contains infromation only about cells relative distance till endpoint
+        mazeroute.path  - list cells that define shortest path. Filled by makeMove method.
+
+        cells[startcell] contains value ERR  if path not is not found.
+                        contains value ST    if path is found.
+                        each cell in path is marked '%%'
+                        each Forbiden cell is marked  with 'X'
+        '''
     def __init__(self,maze):
         self.maze=maze
         self.cells={}
