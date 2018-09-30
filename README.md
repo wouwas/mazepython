@@ -1,5 +1,8 @@
 pip3 install requests
 python3 main.py
+
+
+
 Script solves https://ponychallenge.trustpilot.com/index.html
 -Reads configuration file
 -Moves pony throuht the maze by calculating shortest path between pony and exit.
