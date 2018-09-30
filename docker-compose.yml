@@ -1,8 +1,0 @@
-version: '2.1'
-
-services:
-  trustpilotponymaze:
-    image: trustpilotponymaze
-    build: .
-    ports:
-      - 8000:8000
