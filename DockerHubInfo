@@ -1,0 +1,2 @@
+Docker hub
+docker run -it docker.io/wouwas/trustpilotponymaze
